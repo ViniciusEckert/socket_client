@@ -10,13 +10,13 @@ interface Message {
 }
 
 export default function Home() {
-  const socket = io("http://localhost:8080");
 
   const [messages, setMessages] = useState([] as Message[]);
   const [author, setAuthor] = useState("");
   const [newMessage, setNewMessage] = useState("");
 
   useEffect(() => {
+    const socket = io(process.env.NEXT_PUBLIC_API_URL);
     socket.on("connect", () => {
       socket.on("message", (data: Message) => {
         setMessages((oldState) => [...oldState, data]);
@@ -26,11 +26,11 @@ export default function Home() {
     return () => {
       socket.disconnect();
     };
-  }, [socket]);
+  }, []);
 
   function handleSubmite(e: SubmitEvent) {
     e.preventDefault();
-    fetch("http://localhost:8080/message", {
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/messages`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
